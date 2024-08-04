@@ -43,7 +43,7 @@ def status():
         spinner="moon",
     ):
         try:
-            response = requests.get(f"{SERVER_URL}/status", params={"key": event_code})
+            response = requests.get(f"{SERVER_URL}/status", params={"event_code": event_code})
             sleep(3)
             response.raise_for_status()  # Raise an exception for HTTP errors
             remaining_eth = response.json().get("available_ether")
@@ -100,7 +100,9 @@ def create():
                 f"[bold green]🎉 Congrats! Your popupfaucet is live on the {network} testnet![/bold green]\n\nTestnet tokens are available to claim via:\n\n`pipx install popupfaucet`\n`popupfaucet claim`"
             )
         else:
-            console.print(f"[bold red]❌ [Error] {response.status_code}: {response.reason}[/bold red]")
+            console.print(
+                f"[bold red]❌ [Error] {response.status_code}: {response.reason}[/bold red]"
+            )
 
 
 @popupfaucet.command()
@@ -130,18 +132,23 @@ def claim():
     network = answers["network"]
     event_code = answers["event_code"]
     address = answers["address"]
-    if not address:
-        console.print("[bold red]❌ Invalid: Address is required.[/bold red]")
-    else:
-        with console.status(f"Checking faucet availability...", spinner="moon"):
-            # Simulate
-            sleep(3)
+
+    with console.status(f"Checking faucet availability...", spinner="moon"):
+        # Simulate
+        sleep(3)
         console.print(f"[bold green]✅ Faucet has funds.[/bold green]")
 
-        with console.status(f"Sending transaction...", spinner="moon"):
+    with console.status(f"Sending transaction...", spinner="moon"):
+        payload = {"event_code": event_code, "address": address}
+        response = requests.post(f"{SERVER_URL}/claim-faucet", json=payload)
+        if response.status_code == 200:
             # Simulate
             sleep(4)
-        console.print("[bold green]🎉 Congrats! Check your account![/bold green]")
+            console.print("[bold green]🎉 Congrats! Check your account![/bold green]")
+        else:
+            console.print(
+                f"[bold red]❌ [Error] {response.status_code}: {response.reason}[/bold red]"
+            )
 
 
 if __name__ == "__main__":
