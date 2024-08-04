@@ -74,33 +74,33 @@ def create():
     answers = prompt(questions)
     network = answers["network"]
     event_code = answers["event_code"]
-    if not event_code:
-        console.print("[bold red]❌ Invalid: Event code is required.[/bold red]")
-    else:
-        with console.status(
-            f"Checking availability of [bold]{event_code}[/bold] on [bold]{network}[/bold] network...",
-            spinner="moon",
-        ):
-            # Simulate
+    with console.status(
+        f"Checking availability of [bold]{event_code}[/bold] on [bold]{network}[/bold] network...",
+        spinner="moon",
+    ):
+        # Simulate
+        sleep(2)
+
+    console.print(
+        f"🤝 Great! [bold]'{event_code}'[/bold] is an available event code on the [bold]{network}[/bold] network!"
+    )
+    console.print(
+        "[magenta]🔗 Send tokens to [bold]0xaBc123[/bold]. Press [bold]enter[/bold] once sent.[/magenta]"
+    )
+    input()
+
+    with console.status(
+        "[bold yellow]Waiting for confirmation...[/bold yellow]", spinner="moon"
+    ):
+        payload = {"event_code": event_code, "ether_amount": 0.1}
+        response = requests.post(f"{SERVER_URL}/create-faucet", json=payload)
+        if response.status_code == 200:
             sleep(2)
-
-        console.print(
-            f"🤝 Great! [bold]'{event_code}'[/bold] is an available event code on the [bold]{network}[/bold] network!"
-        )
-        console.print(
-            "[magenta]🔗 Send tokens to [bold]0xaBc123[/bold]. Press [bold]enter[/bold] once sent.[/magenta]"
-        )
-        input()
-
-        with console.status(
-            "[bold yellow]Waiting for confirmation...[/bold yellow]", spinner="moon"
-        ):
-            # Simulate
-            sleep(2)
-
-        console.print(
-            f"[bold green]🎉 Congrats! Your popupfaucet is live on the {network} testnet![/bold green]\n\nTestnet tokens are available to claim via:\n\n`pipx install popupfaucet`\n`popupfaucet claim {event_code}`"
-        )
+            console.print(
+                f"[bold green]🎉 Congrats! Your popupfaucet is live on the {network} testnet![/bold green]\n\nTestnet tokens are available to claim via:\n\n`pipx install popupfaucet`\n`popupfaucet claim`"
+            )
+        else:
+            console.print(f"[bold red]❌ [Error] {response.status_code}: {response.reason}[/bold red]")
 
 
 @popupfaucet.command()
