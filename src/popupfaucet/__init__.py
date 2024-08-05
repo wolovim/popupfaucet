@@ -4,6 +4,7 @@ from rich.prompt import Prompt
 from time import sleep
 from InquirerPy import prompt
 import requests
+from eth_account import Account
 
 SERVER_URL = "http://localhost:5000"
 
@@ -92,15 +93,34 @@ def create():
                 f"🤝 Great! [bold]'{event_code}'[/bold] is an available event code on the [bold]{network}[/bold] network!"
             )
 
+    acct = Account.create()
     console.print(
-        "[magenta]🔗 Send tokens to [bold]0xaBc123[/bold]. Press [bold]enter[/bold] once sent.[/magenta]"
+        f"[magenta]🔗 Send testnet ether to [bold]{acct.address}[/bold].\nPress [bold]enter[/bold] once sent.[/magenta]"
     )
     input()
 
     with console.status(
         "[bold yellow]Waiting for confirmation...[/bold yellow]", spinner="moon"
     ):
-        payload = {"event_code": event_code, "ether_amount": 0.1}
+        payload = {"pk": acct.key.hex()}
+        waiting_for_confirmation = True
+        while waiting_for_confirmation:
+            response = requests.post(f"{SERVER_URL}/seeder-funded", json=payload)
+            if response.status_code == 200:
+                sleep(2)
+                console.print(
+                    f"[bold green]✅ Account funded![/bold green]"
+                )
+                waiting_for_confirmation = False
+            else:
+                console.print(
+                    f"[bold red]❌ [Error] Haven't received it yet![/bold red]"
+                )
+
+    with console.status(
+        "[bold yellow]Deploying faucet...[/bold yellow]", spinner="moon"
+    ):
+        payload = {"event_code": event_code, "pk": acct.key.hex()}
         response = requests.post(f"{SERVER_URL}/create-faucet", json=payload)
         if response.status_code == 200:
             sleep(2)
@@ -108,8 +128,9 @@ def create():
                 f"[bold green]🎉 Congrats! Your popupfaucet is live on the {network} testnet![/bold green]\n\nTestnet tokens are available to claim via:\n\n`pipx install popupfaucet`\n`popupfaucet claim`"
             )
         else:
+            console.print(response)
             console.print(
-                f"[bold red]❌ [Error] {response.status_code}: {response.reason}[/bold red]"
+                f"[bold red]❌ [Error] {response}[/bold red]"
             )
 
 
