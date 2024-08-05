@@ -13,7 +13,7 @@ NETWORK_CHOICES = ["Sepolia", "OP Sepolia", "Base Sepolia"]
 
 @click.group()
 def popupfaucet():
-    """Popup Faucet CLI"""
+    """popupfaucet CLI"""
     pass
 
 
@@ -43,7 +43,7 @@ def status():
         spinner="moon",
     ):
         try:
-            response = requests.get(f"{SERVER_URL}/status", params={"event_code": event_code})
+            response = requests.get(f"{SERVER_URL}/status", params={"event_code": event_code, "network": network})
             sleep(3)
             response.raise_for_status()  # Raise an exception for HTTP errors
             remaining_eth = response.json().get("available_ether")
@@ -78,12 +78,20 @@ def create():
         f"Checking availability of [bold]{event_code}[/bold] on [bold]{network}[/bold] network...",
         spinner="moon",
     ):
+        response = requests.get(f"{SERVER_URL}/availability", params={"event_code": event_code, "network": network})
+        is_available = response.json().get("is_available")
         # Simulate
         sleep(2)
+        if not is_available:
+            console.print(
+                f"[bold red]❌ [Error] Event code '{event_code}' is not available on the {network} network.[/bold red]"
+            )
+            return
+        else:
+            console.print(
+                f"🤝 Great! [bold]'{event_code}'[/bold] is an available event code on the [bold]{network}[/bold] network!"
+            )
 
-    console.print(
-        f"🤝 Great! [bold]'{event_code}'[/bold] is an available event code on the [bold]{network}[/bold] network!"
-    )
     console.print(
         "[magenta]🔗 Send tokens to [bold]0xaBc123[/bold]. Press [bold]enter[/bold] once sent.[/magenta]"
     )
