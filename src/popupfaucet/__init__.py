@@ -5,6 +5,7 @@ from time import sleep
 from InquirerPy import prompt
 import requests
 from eth_account import Account
+from eth_utils import is_normalized_address
 
 SERVER_URL = "http://localhost:5000"
 
@@ -45,12 +46,11 @@ def status():
     ):
         try:
             response = requests.get(f"{SERVER_URL}/status", params={"event_code": event_code, "network": network})
-            sleep(3)
-            response.raise_for_status()  # Raise an exception for HTTP errors
+            sleep(2)
             event_exists = response.json().get("event_exists")
             if not event_exists:
                 console.print(
-                    f"[red]🚫 [bold]{event_code}[/bold] is not available on [bold]{network}[/bold].[/red]"
+                    f"[red]🚫 [bold]{event_code}[/bold] is not yet deployed on [bold]{network}[/bold].[/red]"
                 )
                 return
             
@@ -161,7 +161,7 @@ def claim():
             "type": "input",
             "name": "address",
             "message": "Address to receive testnet ether?",
-            "validate": lambda x: x != "",
+            "validate": lambda x: is_normalized_address(x.lower()),
         },
     ]
     answers = prompt(questions)
@@ -170,8 +170,16 @@ def claim():
     address = answers["address"]
 
     with console.status(f"Checking faucet availability...", spinner="moon"):
+        response = requests.get(f"{SERVER_URL}/status", params={"event_code": event_code, "network": network})
+        available_ether = response.json().get("available_ether")
+        if available_ether == 0:
+            console.print(
+                f"[red]❌ No funds found in faucet [bold]'{event_code}'[/bold] on {network}.[/red]"
+            )
+            return
+
         # Simulate
-        sleep(3)
+        sleep(2)
         console.print(f"[bold green]✅ Faucet has funds.[/bold green]")
 
     with console.status(f"Sending transaction...", spinner="moon"):
@@ -183,7 +191,7 @@ def claim():
             console.print("[bold green]🎉 Congrats! Check your account![/bold green]")
         else:
             console.print(
-                f"[bold red]❌ [Error] {response.status_code}: {response.reason}[/bold red]"
+                f"[bold red]❌ [Error] {response}[/bold red]"
             )
 
 

@@ -11,6 +11,7 @@ dependencies = [
     "requests>=2.32.3",
     "inquirerpy>=0.3.4",
     "eth-account>=0.13.1",
+    "eth-utils>=4.1.1",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"

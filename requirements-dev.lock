@@ -47,6 +47,7 @@ eth-utils==4.1.1
     # via eth-keyfile
     # via eth-keys
     # via eth-rlp
+    # via popupfaucet
     # via rlp
 hexbytes==1.2.1
     # via eth-account
