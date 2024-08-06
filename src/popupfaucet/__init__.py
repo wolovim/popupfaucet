@@ -47,6 +47,13 @@ def status():
             response = requests.get(f"{SERVER_URL}/status", params={"event_code": event_code, "network": network})
             sleep(3)
             response.raise_for_status()  # Raise an exception for HTTP errors
+            event_exists = response.json().get("event_exists")
+            if not event_exists:
+                console.print(
+                    f"[red]🚫 [bold]{event_code}[/bold] is not available on [bold]{network}[/bold].[/red]"
+                )
+                return
+            
             remaining_eth = response.json().get("available_ether")
             console.print(
                 f"[green]💰 [bold]{remaining_eth}[/bold] eth remaining in [bold]{event_code}[/bold] faucet on [bold]{network}[/bold].[/green]"
