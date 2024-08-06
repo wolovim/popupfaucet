@@ -102,7 +102,7 @@ def create():
 
     acct = Account.create()
     console.print(
-        f"[magenta]🔗 Send testnet ether to [bold]{acct.address}[/bold].\nPress [bold]enter[/bold] once sent.[/magenta]"
+        f"[magenta]🔗 Send [bold]{network}[/bold] testnet ether to [bold]{acct.address}[/bold]\nPress [bold]enter[/bold] once sent.[/magenta]"
     )
     input()
 
