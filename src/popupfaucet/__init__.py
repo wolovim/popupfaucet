@@ -106,7 +106,7 @@ def create():
     with console.status(
         "[bold yellow]Waiting for confirmation...[/bold yellow]", spinner="moon"
     ):
-        payload = {"pk": acct.key.hex()}
+        payload = {"network": network, "pk": acct.key.hex()}
         waiting_for_confirmation = True
         while waiting_for_confirmation:
             response = requests.post(f"{SERVER_URL}/seeder-funded", json=payload)
@@ -123,7 +123,7 @@ def create():
     with console.status(
         "[bold yellow]Deploying faucet...[/bold yellow]", spinner="moon"
     ):
-        payload = {"event_code": event_code, "pk": acct.key.hex()}
+        payload = {"event_code": event_code, "network": network, "pk": acct.key.hex()}
         response = requests.post(f"{SERVER_URL}/create-faucet", json=payload)
         if response.status_code == 200:
             console.print(
@@ -175,7 +175,7 @@ def claim():
         console.print(f"[bold green]✅ Faucet has funds.[/bold green]")
 
     with console.status(f"Sending transaction...", spinner="moon"):
-        payload = {"event_code": event_code, "address": address}
+        payload = {"event_code": event_code, "network": network, "address": address}
         response = requests.post(f"{SERVER_URL}/claim-faucet", json=payload)
         if response.status_code == 200:
             console.print("[bold green]🎉 Congrats! Check your account![/bold green]")
