@@ -1,7 +1,6 @@
 import click
 from rich.console import Console
 from rich.prompt import Prompt
-from time import sleep
 from InquirerPy import prompt
 import requests
 from eth_account import Account
@@ -46,7 +45,6 @@ def status():
     ):
         try:
             response = requests.get(f"{SERVER_URL}/status", params={"event_code": event_code, "network": network})
-            sleep(2)
             event_exists = response.json().get("event_exists")
             if not event_exists:
                 console.print(
@@ -88,8 +86,6 @@ def create():
     ):
         response = requests.get(f"{SERVER_URL}/availability", params={"event_code": event_code, "network": network})
         is_available = response.json().get("is_available")
-        # Simulate
-        sleep(2)
         if not is_available:
             console.print(
                 f"[bold red]❌ [Error] Event code '{event_code}' is not available on the {network} network.[/bold red]"
@@ -114,7 +110,6 @@ def create():
         while waiting_for_confirmation:
             response = requests.post(f"{SERVER_URL}/seeder-funded", json=payload)
             if response.status_code == 200:
-                sleep(2)
                 console.print(
                     f"[bold green]✅ Account funded![/bold green]"
                 )
@@ -130,7 +125,6 @@ def create():
         payload = {"event_code": event_code, "pk": acct.key.hex()}
         response = requests.post(f"{SERVER_URL}/create-faucet", json=payload)
         if response.status_code == 200:
-            sleep(2)
             console.print(
                 f"[bold green]🎉 Congrats! Your popupfaucet is live on the {network} testnet![/bold green]\n\nTestnet tokens are available to claim via:\n\n`pipx install popupfaucet`\n`popupfaucet claim`"
             )
@@ -177,17 +171,12 @@ def claim():
                 f"[red]❌ No funds found in faucet [bold]'{event_code}'[/bold] on {network}.[/red]"
             )
             return
-
-        # Simulate
-        sleep(2)
         console.print(f"[bold green]✅ Faucet has funds.[/bold green]")
 
     with console.status(f"Sending transaction...", spinner="moon"):
         payload = {"event_code": event_code, "address": address}
         response = requests.post(f"{SERVER_URL}/claim-faucet", json=payload)
         if response.status_code == 200:
-            # Simulate
-            sleep(4)
             console.print("[bold green]🎉 Congrats! Check your account![/bold green]")
         else:
             console.print(
