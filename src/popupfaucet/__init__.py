@@ -1,3 +1,4 @@
+from time import sleep
 import click
 from rich.console import Console
 from rich.prompt import Prompt
@@ -119,6 +120,7 @@ def create():
                 console.print(
                     f"[bold red]❌ [Error] Haven't received it yet![/bold red]"
                 )
+                sleep(5)
 
     with console.status(
         "[bold yellow]Deploying faucet...[/bold yellow]", spinner="moon"
