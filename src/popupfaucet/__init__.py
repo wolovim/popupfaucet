@@ -116,7 +116,7 @@ def create():
 
     acct = Account.create()
     console.print(
-        f"[magenta]🔗 Send [bold]{network}[/bold] testnet ether to [bold]{acct.address}[/bold]\nA minimum of 0.005 testnet ether is recommended.\nPress [bold]enter[/bold] once sent.[/magenta]"
+        f"[magenta]🔗 Send [bold]{network}[/bold] testnet ether to:\n[bold]{acct.address}[/bold]\n\nA minimum of 0.05 testnet ether is recommended.\nYou may add more (`topup`) after successful creation.\n\nPress [bold]enter[/bold] once sent.[/magenta]"
     )
     input()
 

@@ -1,6 +1,6 @@
 [project]
 name = "popupfaucet"
-version = "0.1.0-beta.2"
+version = "0.1.0-beta.4"
 description = "Ethereum testnet faucet CLI"
 authors = [
     { name = "wolovim", email = "3621728+wolovim@users.noreply.github.com" }
