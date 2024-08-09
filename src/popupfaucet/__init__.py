@@ -12,6 +12,11 @@ SERVER_URL = "http://127.0.0.1:5000"
 
 console = Console()
 NETWORK_CHOICES = ["Sepolia", "OP Sepolia", "Base Sepolia"]
+BLOCK_EXPLORERS = {
+    "Sepolia": "https://sepolia.etherscan.io/tx/",
+    "OP Sepolia": "https://sepolia-optimism.etherscan.io/tx/",
+    "Base Sepolia": "https://sepolia.basescan.org/tx/",
+}
 
 
 @click.group()
@@ -138,7 +143,9 @@ def create():
         response = requests.post(f"{SERVER_URL}/create-faucet", json=payload)
         if response.status_code == 200:
             console.print(
-                f"[bold green]🎉 Congrats! Your popupfaucet is live on the {network} testnet![/bold green]\n\nTestnet tokens are available to claim via:\n\n`pipx install popupfaucet`\n`popupfaucet claim`"
+                f"[bold green]🎉 Congrats! Your popupfaucet is live on the {network} testnet![/bold green]\n\n"
+                f"[bold green]🔗 View the transaction: {BLOCK_EXPLORERS[network] + response.json()["tx_hash"]}[/bold green]\n\n"
+                "Testnet tokens are available to claim via:\n\n`pipx install popupfaucet`\n`popupfaucet claim`"
             )
         else:
             console.print(response)
@@ -219,7 +226,9 @@ def topup():
         response = requests.post(f"{SERVER_URL}/top-up", json=payload)
         if response.status_code == 200:
             console.print(
-                f"[bold green]🎉 Congrats! Your popupfaucet has been topped up![/bold green]\n\nTestnet tokens are available to claim via:\n\n`pipx install popupfaucet`\n`popupfaucet claim`"
+                f"[bold green]🎉 Congrats! Your popupfaucet has been topped up![/bold green]\n\n"
+                f"[bold green]🔗 View the transaction: {BLOCK_EXPLORERS[network] + response.json()["tx_hash"]}[/bold green]\n\n"
+                "Testnet tokens are available to claim via:\n\n`pipx install popupfaucet`\n`popupfaucet claim`"
             )
         else:
             console.print(response)
@@ -271,7 +280,11 @@ def claim():
         payload = {"event_code": event_code, "network": network, "address": address}
         response = requests.post(f"{SERVER_URL}/claim-faucet", json=payload)
         if response.status_code == 200:
-            console.print("[bold green]🎉 Congrats! Check your account![/bold green]")
+            tx_hash = response.json()["tx_hash"]
+            console.print(
+                "[bold green]🎉 Congrats! Check your account![/bold green]"
+                f"[bold green]🔗 View the transaction: {BLOCK_EXPLORERS[network] + response.json()["tx_hash"]}[/bold green]\n\n"
+                )
         else:
             console.print(f"[bold red]❌ [Error] {response}[/bold red]")
 
