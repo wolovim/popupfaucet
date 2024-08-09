@@ -1,9 +1,10 @@
 from time import sleep
 import click
 from rich.console import Console
-from rich.prompt import Prompt
 from InquirerPy import prompt
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 from eth_account import Account
 from eth_utils import is_normalized_address
 
@@ -17,6 +18,11 @@ BLOCK_EXPLORERS = {
     "OP Sepolia": "https://optimism-sepolia.blockscout.com/tx/",
     "Base Sepolia": "https://base-sepolia.blockscout.com/tx/",
 }
+
+# retry GET requests
+session = requests.Session()
+retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
+session.mount('https://', HTTPAdapter(max_retries=retries))
 
 
 @click.group()
@@ -51,7 +57,7 @@ def status():
         spinner="moon",
     ):
         try:
-            response = requests.get(
+            response = session.get(
                 f"{SERVER_URL}/status",
                 params={"event_code": event_code, "network": network},
             )
@@ -66,7 +72,7 @@ def status():
             console.print(
                 f"[green]💰 [bold]{remaining_eth}[/bold] eth remaining in [bold]{event_code}[/bold] faucet on [bold]{network}[/bold].[/green]"
             )
-        except requests.exceptions.RequestException as e:
+        except Exception as e:
             console.print(f"[bold red]❌ Error: {str(e)}.[/bold red]")
 
 
@@ -95,7 +101,7 @@ def create():
         spinner="moon",
     ):
         try:
-            response = requests.get(
+            response = session.get(
                 f"{SERVER_URL}/availability",
                 params={"event_code": event_code, "network": network},
             )
@@ -179,7 +185,7 @@ def topup():
         spinner="moon",
     ):
         try:
-            response = requests.get(
+            response = session.get(
                 f"{SERVER_URL}/status",
                 params={"event_code": event_code, "network": network},
             )
@@ -264,7 +270,7 @@ def drip():
     address = answers["address"]
 
     with console.status(f"Checking faucet availability...", spinner="moon"):
-        response = requests.get(
+        response = session.get(
             f"{SERVER_URL}/status",
             params={"event_code": event_code, "network": network},
         )
