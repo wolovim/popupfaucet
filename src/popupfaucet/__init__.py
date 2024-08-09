@@ -7,8 +7,8 @@ import requests
 from eth_account import Account
 from eth_utils import is_normalized_address
 
-SERVER_URL = "http://127.0.0.1:5000"
-# SERVER_URL = "https://popupfaucet-server-tplm.onrender.com"
+# SERVER_URL = "http://127.0.0.1:5000"
+SERVER_URL = "https://popupfaucet-server-tplm.onrender.com"
 
 console = Console()
 NETWORK_CHOICES = ["Sepolia", "OP Sepolia", "Base Sepolia"]
