@@ -13,9 +13,9 @@ SERVER_URL = "https://popupfaucet-server-tplm.onrender.com"
 console = Console()
 NETWORK_CHOICES = ["Sepolia", "OP Sepolia", "Base Sepolia"]
 BLOCK_EXPLORERS = {
-    "Sepolia": "https://sepolia.etherscan.io/tx/",
-    "OP Sepolia": "https://sepolia-optimism.etherscan.io/tx/",
-    "Base Sepolia": "https://sepolia.basescan.org/tx/",
+    "Sepolia": "https://eth-sepolia.blockscout.com/tx/",
+    "OP Sepolia": "https://optimism-sepolia.blockscout.com/tx/",
+    "Base Sepolia": "https://base-sepolia.blockscout.com/tx/",
 }
 
 
@@ -99,7 +99,7 @@ def create():
                 f"{SERVER_URL}/availability",
                 params={"event_code": event_code, "network": network},
             )
-            response.raise_for_status()
+            # response.raise_for_status()
             is_available = response.json().get("is_available")
             if not is_available:
                 console.print(
@@ -110,13 +110,13 @@ def create():
                 console.print(
                     f"🤝 Great! [bold]'{event_code}'[/bold] is an available event code on the [bold]{network}[/bold] network!"
                 )
-        except Exception as e:
-            console.print(f"Uh oh, something went wrong. Here's the error message: {e}")
+        except Exception:
+            console.print(f"Uh oh, something went wrong! Please try again.")
             return
 
     acct = Account.create()
     console.print(
-        f"[magenta]🔗 Send [bold]{network}[/bold] testnet ether to [bold]{acct.address}[/bold]\nA minimum of 0.002 testnet ether is recommended.\nPress [bold]enter[/bold] once sent.[/magenta]"
+        f"[magenta]🔗 Send [bold]{network}[/bold] testnet ether to [bold]{acct.address}[/bold]\nA minimum of 0.005 testnet ether is recommended.\nPress [bold]enter[/bold] once sent.[/magenta]"
     )
     input()
 
@@ -145,7 +145,7 @@ def create():
             console.print(
                 f"[bold green]🎉 Congrats! Your popupfaucet is live on the {network} testnet![/bold green]\n\n"
                 f"[bold green]🔗 View the transaction: {BLOCK_EXPLORERS[network] + response.json()["tx_hash"]}[/bold green]\n\n"
-                "Testnet tokens are available to claim via:\n\n`pipx install popupfaucet`\n`popupfaucet claim`"
+                "Testnet tokens are available to drip via:\n\n`pipx install popupfaucet`\n`popupfaucet drip`"
             )
         else:
             console.print(response)
@@ -179,13 +179,13 @@ def topup():
         spinner="moon",
     ):
         try:
-            check_exists = requests.get(
+            response = requests.get(
                 f"{SERVER_URL}/status",
                 params={"event_code": event_code, "network": network},
             )
 
-            check_exists.raise_for_status()
-            faucet_exists = check_exists.json().get("event_exists")
+            # response.raise_for_status()
+            faucet_exists = response.json().get("event_exists")
             if not faucet_exists:
                 console.print(
                     f"[bold red]❌ [Error] Event code '{event_code}' does not exist on the {network} network.[/bold red]"
@@ -195,8 +195,8 @@ def topup():
                 console.print(
                     f"🤝 Great! [bold]'{event_code}'[/bold] was found on the [bold]{network}[/bold] network!"
                 )
-        except Exception as e:
-            console.print(f"Uh oh, something went wrong. Here's the error message: {e}")
+        except Exception:
+            console.print(f"Uh oh, something went wrong! Please try again.")
             return
 
     console.print(
@@ -228,7 +228,7 @@ def topup():
             console.print(
                 f"[bold green]🎉 Congrats! Your popupfaucet has been topped up![/bold green]\n\n"
                 f"[bold green]🔗 View the transaction: {BLOCK_EXPLORERS[network] + response.json()["tx_hash"]}[/bold green]\n\n"
-                "Testnet tokens are available to claim via:\n\n`pipx install popupfaucet`\n`popupfaucet claim`"
+                "Testnet tokens are available to drip via:\n\n`pipx install popupfaucet`\n`popupfaucet drip`"
             )
         else:
             console.print(response)
@@ -236,7 +236,7 @@ def topup():
 
 
 @popupfaucet.command()
-def claim():
+def drip():
     """Claim tokens from an event by its event code."""
     questions = [
         {

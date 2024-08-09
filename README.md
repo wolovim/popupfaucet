@@ -32,7 +32,7 @@ Current options leave something to be desired:
     1. Send testnet ether to the address provided
     1. ✨ voila ✨
 1. `popupfaucet status` to view available funds in your faucet
-1. `popupfaucet claim` to receive testnet funds from a faucet
+1. `popupfaucet drip` to receive testnet funds from a faucet
     1. Select the network
     1. Enter the event code
     1. Enter the address to receive the testnet ether
