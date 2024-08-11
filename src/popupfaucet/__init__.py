@@ -33,7 +33,7 @@ def popupfaucet():
 
 @popupfaucet.command()
 def status():
-    """Check the status of an event by its event code."""
+    """Check the status of a faucet by its event code."""
     questions = [
         {
             "type": "list",
@@ -78,7 +78,7 @@ def status():
 
 @popupfaucet.command()
 def create():
-    """Create a new popup faucet event. Prompts for event code and confirmation of token sending."""
+    """Create a new popupfaucet. Prompts for event code and confirmation of token sending."""
     questions = [
         {
             "type": "list",
@@ -149,18 +149,18 @@ def create():
         response = requests.post(f"{SERVER_URL}/create-faucet", json=payload)
         if response.status_code == 200:
             console.print(
-                f"[bold green]🎉 Congrats! Your popupfaucet is live on the {network} testnet![/bold green]\n\n"
-                f"[bold green]🔗 View the transaction: {BLOCK_EXPLORERS[network] + response.json()["tx_hash"]}[/bold green]\n\n"
-                "Testnet tokens are available to drip via:\n\n`pipx install popupfaucet`\n`popupfaucet drip`"
+                f"[bold green]🎉 Congrats! Your popupfaucet is live![/bold green]\n\n"
+                f"🔗 View the transaction:\n[bold]{BLOCK_EXPLORERS[network] + response.json()['tx_hash']}[/bold]\n\n"
+                "Testnet tokens are available via the `popupfaucet drip` command.\n"
+                f"You can share your event code, [bold]{event_code}[/bold] (on [bold]{network}[/bold])"
             )
         else:
-            console.print(response)
             console.print(f"[bold red]❌ [Error] {response}[/bold red]")
 
 
 @popupfaucet.command()
 def topup():
-    """Add funds to a popup faucet event. Prompts for event code and confirmation of token sending."""
+    """Add funds to a popupfaucet. Prompts for an event code and confirmation of token sending."""
     questions = [
         {
             "type": "list",
@@ -206,7 +206,7 @@ def topup():
             return
 
     console.print(
-        f"[magenta]🔗 Send [bold]{network}[/bold] testnet ether to [bold]{acct.address}[/bold]\nA minimum of 0.002 testnet ether is recommended.\nPress [bold]enter[/bold] once sent.[/magenta]"
+        f"[magenta]🔗 Send [bold]{network}[/bold] testnet ether to:\n[bold]{acct.address}[/bold]\nA minimum of 0.005 testnet ether is recommended.\nPress [bold]enter[/bold] once sent.[/magenta]"
     )
     input()
 
@@ -224,6 +224,7 @@ def topup():
                 console.print(
                     f"[bold red]❌ [Error] Haven't received it yet![/bold red]"
                 )
+                sleep(5)
 
     with console.status(
         "[bold yellow]Sending funds to faucet...[/bold yellow]", spinner="moon"
@@ -243,7 +244,7 @@ def topup():
 
 @popupfaucet.command()
 def drip():
-    """Claim tokens from an event by its event code."""
+    """Claim tokens from a faucet by its event code."""
     questions = [
         {
             "type": "list",

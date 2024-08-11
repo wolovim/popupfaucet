@@ -37,3 +37,9 @@ Current options leave something to be desired:
     1. Enter the event code
     1. Enter the address to receive the testnet ether
     1. ✨ enjoy ✨
+
+### Where
+
+- This repo is the CLI app [deployed](https://pypi.org/project/popupfaucet) to PyPI
+- Ape project with Solidity contract: [repo](https://github.com/wolovim/popupfaucet-contract)
+- Server Flask app: [repo](https://github.com/wolovim/popupfaucet-server)
